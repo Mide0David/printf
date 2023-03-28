@@ -31,15 +31,18 @@ int handle_print(const char *fmt, int *ind, va_list list, char buffer[],
 		if (fmt[*ind] == '\0')
 			return (-1);
 		unknow_len += write(1, "%%", 1);
-		if (fmt[*ind - 1] == ' ')
+		if (*ind > 0 && fmt[*ind - 1] == ' ')
 			unknow_len += write(1, " ", 1);
 		else if (width)
 		{
-			--(*ind);
-			while (fmt[*ind] != ' ' && fmt[*ind] != '%')
-				--(*ind);
-			if (fmt[*ind] == ' ')
-				--(*ind);
+			int j = *ind;
+
+			while (j > 0 && fmt[j - 1] != ' ' && fmt[j - 1] != '%')
+				j--;
+			if (j > 0 && fmt[j] == ' ')
+			unknow_len += write(1, " ", 1);
+			else
+			*ind = j;
 			return (1);
 		}
 		unknow_len += write(1, &fmt[*ind], 1);
@@ -47,4 +50,3 @@ int handle_print(const char *fmt, int *ind, va_list list, char buffer[],
 	}
 	return (printed_chars);
 }
-
